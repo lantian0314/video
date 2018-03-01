@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 
 import io.vov.vitamio.Vitamio;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override

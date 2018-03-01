@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.ThumbnailUtils;
@@ -26,25 +29,26 @@ import orm.video.utils.PixelUtils;
  * Created by xingyatong on 2018/2/28.
  */
 public class VitamioActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, View.OnClickListener {
-    private VideoView videoView = null;
+    @BindView(R.id.video_view_vitamio)
+    VideoView videoView = null;
     String videoPath = "http://qiubai-video.qiushibaike.com/91B2TEYP9D300XXH_3g.mp4";
     String secondPath = "http://bmob-cdn-5540.b0.upaiyun.com/2016/09/09/d0fff44f40ffbc32808db91e4d0e3b4f.mp4";
-    private FrameLayout mVideoContanier = null;
-    private ImageView mIvThumbnail = null;
-    private ImageView mIvPlay = null;
+    @BindView(R.id.fl_layout_vitamio)
+    FrameLayout mVideoContanier = null;
+    @BindView(R.id.iv_video_thumbnail)
+    ImageView mIvThumbnail = null;
+    @BindView(R.id.iv_video_start)
+    ImageView mIvPlay = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vitamio);
+        ButterKnife.bind(this);
         if (!LibsChecker.checkVitamioLibs(this)) {
             Toast.makeText(VitamioActivity.this, "Vitamio未初始化OK", Toast.LENGTH_SHORT).show();
             return;
         }
-        videoView = (VideoView) findViewById(R.id.video_view_vitamio);
-        mVideoContanier = (FrameLayout) findViewById(R.id.fl_layout_vitamio);
-        mIvThumbnail = (ImageView) findViewById(R.id.iv_video_thumbnail);
-        mIvPlay = (ImageView) findViewById(R.id.iv_video_start);
         setThumbnail();
         videoView.setVideoURI(Uri.parse(secondPath));
         mIvPlay.setOnClickListener(this);
@@ -58,11 +62,18 @@ public class VitamioActivity extends AppCompatActivity implements MediaPlayer.On
                 mIvThumbnail.setVisibility(View.GONE);
                 mIvPlay.setVisibility(View.GONE);
                 //准备视频播放
-                MediaController mediaController = new MediaController(VitamioActivity.this, true, mVideoContanier);
+                MediaController mediaController = new MediaController(getApplicationContext(), true, mVideoContanier);
                 videoView.setMediaController(mediaController);
                 videoView.setOnPreparedListener(this);
                 videoView.setOnCompletionListener(this);
                 videoView.setOnErrorListener(this);
+                videoView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        Toast.makeText(VitamioActivity.this, "点击了观看视频", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
                 break;
         }
     }
